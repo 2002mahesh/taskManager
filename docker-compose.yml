@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: ./task-dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"  # Expose frontend (React app) on port 3000
+    restart: always
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8800:3000"  # Expose backend (Node.js server) on port 5000
+    restart: always
+    depends_on:
+      - mongodb
+    environment:
+      - NODE_ENV=development  # Or production based on your setup
+      - db_URL=mongodb://mongodb:27017/taskMangager  # MongoDB connection string
+
+  mongodb:
+    image: mongo:6  # Use official MongoDB image
+    ports:
+      - "27018:27017"  # Expose MongoDB on default port
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_DATABASE=mydatabase  # Initial database
